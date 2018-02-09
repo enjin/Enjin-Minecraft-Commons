@@ -10,56 +10,42 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
 
-group 'com.enjin'
-version '1.0.0-SNAPSHOT'
-
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'com.github.johnrengelman.shadow'
-
 apply from: 'gradle/util.gradle'
 
-/*
-Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
-For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
-*/
-apply from: scriptFile('env.gradle')
-configureJavaCompilers(8)
+subprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-idea {
-    module {
-        scopes.PROVIDED.plus += [configurations.shadow]
+    group 'com.enjin'
+    version '0.0.1-SNAPSHOT'
+
+    idea {
+        module {
+            scopes.PROVIDED.plus += [configurations.shadow]
+        }
     }
-}
 
-tasks.build.dependsOn(shadowJar)
-artifacts.archives shadowJar
+    tasks.build.dependsOn(shadowJar)
+    artifacts.archives shadowJar
 
-tasks.withType(AbstractCompile) {
-    classpath += configurations.shadow
-}
+    tasks.withType(AbstractCompile) {
+        classpath += configurations.shadow
+    }
 
-ext {
-    spigot = '1.12.2-R0.1-SNAPSHOT'
-}
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/groups/public/' }
+    }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/groups/public/' }
-    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-}
+    jar {
+        archiveName = "${project.name}-slim.jar"
+    }
 
-dependencies {
-    shadow group: 'org.spigotmc', name: 'spigot-api', version: spigot
-}
-
-jar {
-    archiveName = "${project.name}-slim.jar"
-}
-
-shadowJar {
-    archiveName = "${project.name}.jar"
+    shadowJar {
+        archiveName = "${project.name}.jar"
+    }
 }
