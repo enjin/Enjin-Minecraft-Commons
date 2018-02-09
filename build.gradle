@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        jcenter();
+        jcenter()
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
@@ -8,6 +8,7 @@ buildscript {
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.bmuschko.clover' version '2.2.0'
 }
 
 apply from: 'gradle/util.gradle'
@@ -18,8 +19,11 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.bmuschko.clover'
 
-    group 'com.enjin'
+    apply from: scriptFile('deps.gradle')
+
+    group 'com.enjin.minecraft_commons'
     version '0.0.1-SNAPSHOT'
 
     idea {
@@ -27,6 +31,8 @@ subprojects {
             scopes.PROVIDED.plus += [configurations.shadow]
         }
     }
+
+    configurations.getByName("clover").extendsFrom(configurations.shadow)
 
     tasks.build.dependsOn(shadowJar)
     artifacts.archives shadowJar
@@ -41,11 +47,32 @@ subprojects {
         maven { url 'https://oss.sonatype.org/content/groups/public/' }
     }
 
+    dependencies {
+        shadow deps.javaCommons
+
+        testCompile deps.junit
+        testCompile deps.mockito
+        testCompile deps.powermockMockito
+        testCompile deps.powermockJUnit4
+        testCompile deps.assertj
+
+        clover deps.clover
+    }
+
     jar {
         archiveName = "${project.name}-slim.jar"
     }
 
     shadowJar {
         archiveName = "${project.name}.jar"
+    }
+
+    clover {
+        testIncludes = ['**/*Test.java']
+
+        report {
+            html = true
+            pdf = true
+        }
     }
 }

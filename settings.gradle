@@ -1,1 +1,2 @@
-include 'spigot-commons'
+include 'core'
+include 'spigot'
