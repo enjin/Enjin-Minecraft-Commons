@@ -1,6 +1,8 @@
 ext.deps = [
         // compile Dependencies
         javaCommons: 'com.enjin:java_commons:0.0.1-SNAPSHOT',
+
+        // shadow Dependencies
         spigot: 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT',
 
         // testCompile Dependencies
