@@ -236,13 +236,26 @@ public class NBTReflection {
         return obj;
     }
 
-    public static Object setEntityNBTTagCompound(Object tag, Object item) {
+    public static Object setEntityNBTTag(Object tag, Object entity) {
         Method method;
         Object obj;
         try {
-            method = item.getClass().getMethod(MethodNames.getEntityNbtSetterMethodName(), getNBTTagCompound());
-            method.invoke(item, tag);
+            method = entity.getClass().getMethod(MethodNames.getEntityNbtSetterMethodName(), getNBTTagCompound());
+            method.invoke(entity, tag);
             obj = tag;
+        } catch (Exception ex) {
+            obj = null;
+        }
+        return obj;
+    }
+
+    public static Object setNBTTag(Object tag, Object item) {
+        Method method;
+        Object obj;
+        try {
+            method = item.getClass().getMethod("setTag", tag.getClass());
+            method.invoke(item, tag);
+            obj = item;
         } catch (Exception ex) {
             obj = null;
         }
