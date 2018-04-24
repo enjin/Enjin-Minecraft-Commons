@@ -17,9 +17,11 @@ public class NBTItem extends NBTCompound {
         return NBTReflection.getItemRootNBTTagCompound(nmsItemStack);
     }
 
+    @Override
     public void setCompound(Object compound) {
-        this.stack = NBTReflection.getBukkitItemStack(
-                NBTReflection.setEntityNBTTag(compound, NBTReflection.createNMSItemStack(this.stack)));
+        Object nmsItemStack = NBTReflection.createNMSItemStack(this.stack);
+        Object tag = NBTReflection.setNBTTag(compound, nmsItemStack);
+        this.stack = NBTReflection.getBukkitItemStack(tag);
     }
 
     public ItemStack getItemStack() {
