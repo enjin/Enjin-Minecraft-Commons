@@ -22,8 +22,9 @@ public class NBTReflection {
         Class clazz;
         try {
             clazz = MinecraftVersion.getVersion().getNMSClass(target);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ex) {
             clazz = null;
+            ex.printStackTrace();
         }
         return clazz;
     }
@@ -32,8 +33,9 @@ public class NBTReflection {
         Class clazz;
         try {
             clazz = MinecraftVersion.getVersion().getCraftBukkitClass(target);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ex) {
             clazz = null;
+            ex.printStackTrace();
         }
         return clazz;
     }

@@ -22,17 +22,23 @@ public enum MinecraftVersion {
         this.rawPackage = this.name().replace("MC", "v");
     }
 
+    public static MinecraftVersion findVersion(String identifier) {
+        MinecraftVersion version = UNKNOWN;
+        for (MinecraftVersion v : values()) {
+            if (v.name().equalsIgnoreCase(identifier))
+                version = v;
+        }
+        return version;
+    }
+
     public static MinecraftVersion getVersion() {
         if (version == null) {
             final String ver = Bukkit.getServer().getClass().getPackage().getName()
                     .replace(".", ", ")
-                    .split(",")[3];
+                    .replace("v", "MC")
+                    .split(",")[3].trim();
 
-            try {
-                version = MinecraftVersion.valueOf(ver.replace("v", "MC"));
-            } catch (IllegalArgumentException ex) {
-                version = MinecraftVersion.UNKNOWN;
-            }
+            version = findVersion(ver);
         }
 
         return version;
