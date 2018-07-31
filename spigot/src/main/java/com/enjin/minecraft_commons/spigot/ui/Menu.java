@@ -1,73 +1,68 @@
 package com.enjin.minecraft_commons.spigot.ui;
 
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
-public class Menu extends MenuHolder {
+import java.util.Optional;
+import java.util.logging.Level;
 
-    private final String title;
-    private int rows;
-    protected Inventory inventory;
+public abstract class Menu extends AbstractMenu implements Listener {
 
-    public Menu(String title, int rows) {
-        super(9 * 6);
-        this.title = title;
-        this.rows = rows;
+    public Menu(String name, Dimension dimension) {
+        super(name, dimension);
+        Bukkit.getServer().getPluginManager().registerEvents(this, getHolder());
     }
 
-    public String getTitle() {
-        return title;
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!(event.getPlayer() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getPlayer();
+        if (!isNameSwitch() && hasOpen(player)) {
+            getComponents().keySet().forEach(component -> {
+                try {
+                    component.onClose(player);
+                } catch (Throwable t) {
+                    getHolder().getLogger().log(Level.WARNING, "An exception was caught while handling a component.", t);
+                }
+            });
+            removePlayer(player);
+        }
     }
 
-    public int getMaxItems() {
-        return rows * 9;
-    }
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
 
-    public boolean addMenuItem(MenuItem item, int x, int y) {
-        return addMenuItem(item, y * 9 + x);
-    }
-
-    public boolean addMenuItem(MenuItem item, int x, int y, short durability) {
-        return addMenuItem(item, y * 9 + x, durability);
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public void destroy() {
-        this.inventory = null;
-        super.items = new MenuItem[items.length];
-    }
-
-    public void setRows(int newrows) {
-        if (this.rows != newrows) {
-            if (this.inventory != null) {
-                inventory.clear();
+        Player player = (Player) event.getWhoClicked();
+        if (hasOpen(player)) {
+            int slot = event.getSlot();
+            if (slot >= getSize()) {
+                return;
             }
 
-            this.rows = newrows;
-            this.inventory = Bukkit.createInventory(this, rows * 9, title);
-            updateInventory();
+            event.setCancelled(true);
+            if (!(event.getClickedInventory() == event.getInventory())) {
+                return;
+            }
+
+            Optional<Component> optionalComponent = getComponent(slot);
+            optionalComponent.ifPresent(component -> {
+                Position pos = getComponents().get(component);
+                Position slotPos = Position.toPosition(this, slot);
+                Position offsetPos = Position.of(slotPos.getX() - pos.getX(), slotPos.getY() - pos.getY());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(),
+                        () -> component.onClick(player, event.getClick(), offsetPos));
+            });
         }
     }
 
-    public Inventory getInventory() {
-        if (this.inventory == null) {
-            this.inventory = Bukkit.createInventory(this, rows * 9, title);
-        }
-
-        return this.inventory;
-    }
-
-    @Override
-    protected MenuHolder clone() {
-        MenuHolder clone = new Menu(title, rows);
-        clone.setExitOnClickOutside(exitOnClickOutside);
-        clone.setMenuCloseBehavior(menuCloseBehavior);
-        clone.items = items.clone();
-        clone.updateInventory();
-
-        return clone;
-    }
 }

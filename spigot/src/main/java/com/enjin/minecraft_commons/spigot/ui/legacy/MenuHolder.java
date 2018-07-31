@@ -1,4 +1,4 @@
-package com.enjin.minecraft_commons.spigot.ui;
+package com.enjin.minecraft_commons.spigot.ui.legacy;
 
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
