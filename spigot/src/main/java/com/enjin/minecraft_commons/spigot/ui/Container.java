@@ -24,4 +24,8 @@ public interface Container {
     void updateAll();
 
     void destroy();
+
+    void allowPlayerInventoryInteractions(boolean state);
+
+    boolean isPlayerInventoryInteractionsAllowed();
 }

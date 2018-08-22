@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Optional;
 import java.util.logging.Level;
@@ -49,19 +50,26 @@ public abstract class Menu extends AbstractMenu implements Listener {
                 return;
             }
 
-            event.setCancelled(true);
-            if (!(event.getClickedInventory() == event.getInventory())) {
-                return;
-            }
+            Inventory inventory = event.getClickedInventory();
+            if (event.getClickedInventory() == player.getInventory()) {
+                if (!isPlayerInventoryInteractionsAllowed()) {
+                    event.setCancelled(true);
+                }
+            } else {
+                event.setCancelled(true);
+                if (!(event.getClickedInventory() == event.getInventory())) {
+                    return;
+                }
 
-            Optional<Component> optionalComponent = getComponent(slot);
-            optionalComponent.ifPresent(component -> {
-                Position pos = getComponents().get(component);
-                Position slotPos = Position.toPosition(this, slot);
-                Position offsetPos = Position.of(slotPos.getX() - pos.getX(), slotPos.getY() - pos.getY());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(),
-                        () -> component.onClick(player, event.getClick(), offsetPos));
-            });
+                Optional<Component> optionalComponent = getComponent(slot);
+                optionalComponent.ifPresent(component -> {
+                    Position pos = getComponents().get(component);
+                    Position slotPos = Position.toPosition(this, slot);
+                    Position offsetPos = Position.of(slotPos.getX() - pos.getX(), slotPos.getY() - pos.getY());
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(),
+                            () -> component.onClick(player, event.getClick(), offsetPos));
+                });
+            }
         }
     }
 

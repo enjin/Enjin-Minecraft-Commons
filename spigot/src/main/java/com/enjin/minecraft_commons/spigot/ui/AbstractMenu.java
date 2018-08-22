@@ -36,6 +36,7 @@ public abstract class AbstractMenu implements Container {
     private Component[][] bySlot;
     private boolean nameSwitch;
     private Function<Player, String> nameProvider;
+    private boolean playerInventoryInteractionsAllowed;
 
     public AbstractMenu(String name, Dimension dimension) {
         this.defaultName = name;
@@ -46,6 +47,7 @@ public abstract class AbstractMenu implements Container {
         this.components = new HashMap<>();
         this.bySlot = new Component[dimension.getHeight()][dimension.getWidth()];
         this.nameProvider = player -> null;
+        this.playerInventoryInteractionsAllowed = false;
     }
 
     private void fill(Component component, Position where) {
@@ -290,6 +292,15 @@ public abstract class AbstractMenu implements Container {
             player.removeMetadata(KEY, getHolder());
             player.closeInventory();
         });
+    }
+
+    @Override
+    public void allowPlayerInventoryInteractions(boolean state) {
+        this.playerInventoryInteractionsAllowed = state;
+    }
+
+    public boolean isPlayerInventoryInteractionsAllowed() {
+        return this.playerInventoryInteractionsAllowed;
     }
 
     protected static Optional<AbstractMenu> getMenu(Player player) {
