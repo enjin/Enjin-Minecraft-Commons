@@ -22,4 +22,6 @@ public interface Container {
     void update(Player player);
 
     void updateAll();
+
+    void destroy();
 }

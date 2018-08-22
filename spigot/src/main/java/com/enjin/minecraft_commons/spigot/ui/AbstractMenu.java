@@ -4,15 +4,19 @@ import com.enjin.minecraft_commons.spigot.ui.event.MenuCloseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -272,6 +276,17 @@ public abstract class AbstractMenu implements Container {
     @Override
     public void updateAll() {
         Bukkit.getOnlinePlayers().forEach(this::update);
+    }
+
+    @Override
+    public void destroy() {
+        List<RegisteredListener> regs = HandlerList.getRegisteredListeners(getHolder());
+        Optional<Listener> optional = regs.stream().filter(r -> r.getListener() == this)
+                .map(RegisteredListener::getListener)
+                .findFirst();
+        optional.ifPresent(HandlerList::unregisterAll);
+
+        this.playerInventories.keySet().forEach(this::closeMenu);
     }
 
     protected static Optional<AbstractMenu> getMenu(Player player) {
