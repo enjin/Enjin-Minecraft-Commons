@@ -182,7 +182,7 @@ public abstract class AbstractMenu implements Container {
             return this;
         }
 
-        Inventory inventory = player.getInventory();
+        Inventory inventory = getInventory(player);
         InventoryView view = player.openInventory(inventory);
 
         if (!view.getTopInventory().equals(inventory)) {
@@ -286,7 +286,10 @@ public abstract class AbstractMenu implements Container {
                 .findFirst();
         optional.ifPresent(HandlerList::unregisterAll);
 
-        this.playerInventories.keySet().forEach(this::closeMenu);
+        this.playerInventories.keySet().forEach(player -> {
+            player.removeMetadata(KEY, getHolder());
+            player.closeInventory();
+        });
     }
 
     protected static Optional<AbstractMenu> getMenu(Player player) {
