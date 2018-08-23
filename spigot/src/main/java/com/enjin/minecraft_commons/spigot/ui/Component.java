@@ -32,4 +32,18 @@ public interface Component {
     default void onClick(Player player, ClickType clickType, Position position) {
     }
 
+    default void onPlace(Player player, ItemStack current, ItemStack cursor, Position position) {
+    }
+
+    default void onPickup(Player player, ItemStack current, ItemStack cursor, Position position) {
+    }
+
+    boolean isAllowPlace();
+
+    boolean isAllowPickup();
+
+    void setAllowPlace(boolean allowPlace);
+
+    void setAllowPickup(boolean allowPickup);
+
 }

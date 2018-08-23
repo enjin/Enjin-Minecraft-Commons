@@ -27,6 +27,8 @@ public abstract class MenuComponent implements Component {
     private Dimension dimension;
     private ClickHandler clickHandler;
     private Collection<Consumer<Player>> cleanupTasks;
+    private boolean allowPlace;
+    private boolean allowPickup;
 
     public MenuComponent(Dimension dimension) {
         this.dimension = dimension;
@@ -81,6 +83,26 @@ public abstract class MenuComponent implements Component {
     @Override
     public final void setParent(Container parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public boolean isAllowPlace() {
+        return allowPlace;
+    }
+
+    @Override
+    public boolean isAllowPickup() {
+        return allowPickup;
+    }
+
+    @Override
+    public void setAllowPlace(boolean allowPlace) {
+        this.allowPlace = allowPlace;
+    }
+
+    @Override
+    public void setAllowPickup(boolean allowPickup) {
+        this.allowPickup = allowPickup;
     }
 
     protected <T> Map<Player, T> createPlayerMap(Supplier<Map<Player, T>> constructor) {
