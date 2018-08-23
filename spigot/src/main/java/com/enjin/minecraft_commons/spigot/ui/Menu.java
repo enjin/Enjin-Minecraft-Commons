@@ -63,9 +63,7 @@ public abstract class Menu extends AbstractMenu implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         if (hasOpen(player)) {
-            boolean containsTopInventorySlots = event.getNewItems().keySet().stream()
-                    .anyMatch(slot -> slot < getSize());
-            if (containsTopInventorySlots) {
+            if (event.getRawSlots().stream().anyMatch(slot -> slot < getSize())) {
                 event.setResult(Event.Result.DENY);
             }
         }
