@@ -67,8 +67,8 @@ public abstract class AbstractMenu implements Container {
 
     protected abstract Inventory createInventory(Player player);
 
-    protected Inventory getInventory(Player player) {
-        return this.playerInventories.computeIfAbsent(player, this::createInventory);
+    protected Inventory getInventory(Player player, boolean createIfAbsent) {
+        return this.playerInventories.computeIfAbsent(player, createIfAbsent ? this::createInventory : null);
     }
 
     protected int getSize() {
@@ -162,9 +162,9 @@ public abstract class AbstractMenu implements Container {
             return;
         }
 
-        if (!getName(player).equalsIgnoreCase(getInventory(player).getTitle())) {
+        if (!getName(player).equalsIgnoreCase(getInventory(player, true).getTitle())) {
             this.nameSwitch = true;
-            Inventory inventory = getInventory(player);
+            Inventory inventory = getInventory(player, true);
             InventoryView view = player.openInventory(inventory);
 
             if (!view.getTopInventory().equals(inventory)) {
@@ -184,7 +184,7 @@ public abstract class AbstractMenu implements Container {
             return this;
         }
 
-        Inventory inventory = getInventory(player);
+        Inventory inventory = getInventory(player, true);
         InventoryView view = player.openInventory(inventory);
 
         if (!view.getTopInventory().equals(inventory)) {
@@ -254,7 +254,7 @@ public abstract class AbstractMenu implements Container {
     public Optional<ItemStack> getItem(Player player, Component component, Position offset) {
         Position pos = this.components.get(component);
         int slot = Position.toSlot(this, pos.getX() + offset.getX(), pos.getY() + offset.getY());
-        Inventory inv = getInventory(player);
+        Inventory inv = getInventory(player, true);
         if (slot < 0 || slot > inv.getSize()) {
             return Optional.empty();
         }
@@ -265,7 +265,7 @@ public abstract class AbstractMenu implements Container {
     public void setItem(Player player, Component component, Position offset, ItemStack stack) {
         Position pos = this.components.get(component);
         int slot = Position.toSlot(this, pos.getX() + offset.getX(), pos.getY() + offset.getY());
-        getInventory(player).setItem(slot, stack);
+        getInventory(player, true).setItem(slot, stack);
     }
 
     @Override
@@ -314,7 +314,7 @@ public abstract class AbstractMenu implements Container {
 
     protected static void setMenu(Player player, AbstractMenu menu) {
         player.setMetadata(KEY, new FixedMetadataValue(getHolder(), menu));
-        menu.playerInventories.put(player, menu.getInventory(player));
+        menu.playerInventories.put(player, menu.getInventory(player, true));
     }
 
     public static boolean hasAnyuMenu(Player player) {
