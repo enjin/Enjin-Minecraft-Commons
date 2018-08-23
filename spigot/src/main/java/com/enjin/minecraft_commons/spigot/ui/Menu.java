@@ -141,6 +141,7 @@ public abstract class Menu extends AbstractMenu implements Listener {
     private void validatePlayerInventoryAction(InventoryClickEvent event) {
         switch (event.getAction()) {
             case MOVE_TO_OTHER_INVENTORY:
+            case COLLECT_TO_CURSOR:
                 event.setResult(Event.Result.DENY);
         }
     }
