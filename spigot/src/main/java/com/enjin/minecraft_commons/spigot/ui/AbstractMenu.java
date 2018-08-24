@@ -68,7 +68,7 @@ public abstract class AbstractMenu implements Container {
     protected abstract Inventory createInventory(Player player);
 
     protected Inventory getInventory(Player player, boolean createIfAbsent) {
-        return this.playerInventories.computeIfAbsent(player, createIfAbsent ? this::createInventory : null);
+        return this.playerInventories.computeIfAbsent(player, createIfAbsent ? this::createInventory : p -> null);
     }
 
     protected int getSize() {
@@ -80,7 +80,7 @@ public abstract class AbstractMenu implements Container {
     }
 
     protected void onClose(Player player) {
-        if (!this.playerInventories.containsKey(player)) {
+        if (this.playerInventories.containsKey(player)) {
             this.closeConsumer.accept(player, this);
         }
         this.playerInventories.remove(player);
