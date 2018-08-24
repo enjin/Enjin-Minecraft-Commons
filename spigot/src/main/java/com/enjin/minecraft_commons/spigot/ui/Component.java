@@ -35,14 +35,21 @@ public interface Component {
     default void onPlace(Player player, ItemStack current, ItemStack cursor, Position position) {
     }
 
+    default void onDrag(Player player, ItemStack current, ItemStack cursor, Position position) {
+    }
+
     default void onPickup(Player player, ItemStack current, ItemStack cursor, Position position) {
     }
 
     boolean isAllowPlace();
 
+    boolean isAllowDrag();
+
     boolean isAllowPickup();
 
     void setAllowPlace(boolean allowPlace);
+
+    void setAllowDrag(boolean allowDrag);
 
     void setAllowPickup(boolean allowPickup);
 

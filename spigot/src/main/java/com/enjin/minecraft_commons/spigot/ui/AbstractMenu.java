@@ -269,6 +269,17 @@ public abstract class AbstractMenu implements Container {
     }
 
     @Override
+    public void setItem(Player player, Position position, ItemStack stack) {
+        Optional<Component> optionalComponent = getComponent(position);
+        if (optionalComponent.isPresent()) {
+            Component component = optionalComponent.get();
+            Position pos = this.components.get(component);
+            Position normal = Position.of(position.getX() - pos.getX(), position.getY() - pos.getY());
+            component.setItem(player, normal, stack);
+        }
+    }
+
+    @Override
     public void update(Player player) {
         this.getComponents().keySet().forEach(component -> component.draw(player));
         setMenu(player, this);

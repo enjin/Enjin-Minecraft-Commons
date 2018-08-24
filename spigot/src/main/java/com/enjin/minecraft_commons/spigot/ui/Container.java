@@ -17,6 +17,8 @@ public interface Container {
 
     void setItem(Player player, Component component, Position position, ItemStack stack);
 
+    void setItem(Player player, Position position, ItemStack stack);
+
     Optional<ItemStack> getItem(Player player, Component component, Position position);
 
     void update(Player player);
