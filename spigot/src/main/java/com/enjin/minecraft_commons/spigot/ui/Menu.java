@@ -14,14 +14,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Stack;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Menu extends AbstractMenu implements Listener {
@@ -70,55 +66,47 @@ public abstract class Menu extends AbstractMenu implements Listener {
 
         Player player = (Player) event.getWhoClicked();
         if (hasOpen(player)) {
-            boolean containsTopEdits = event.getRawSlots().stream().anyMatch(slot -> slot < getSize());
+            InventoryView snapshot = event.getView();
 
-            if (containsTopEdits) {
-                Stack<Map.Entry<Integer, ItemStack>> rewind = new Stack<>();
+            ItemStack cursor = event.getCursor();
+            Map<Integer, ItemStack> rollback = new HashMap<>();
+            for (Map.Entry<Integer, ItemStack> entry : event.getNewItems().entrySet()) {
+                int slot = entry.getKey();
 
-                event.getNewItems().entrySet().forEach(entry -> {
-                    int slot = entry.getKey();
+                if (slot < getSize()) {
+                    Optional<Component> optional = getComponent(slot);
+                    ItemStack item = entry.getValue();
 
-                    if (slot < getSize()) {
-                        Optional<Component> op = getComponent(slot);
-                        if (op.isPresent()) {
-                            Component component = op.get();
-                            if (!component.isAllowDrag()) {
-                                rewind.push(entry);
-                            }
+                    if (!optional.isPresent() || (optional.isPresent() && !optional.get().isAllowDrag())) {
+                        ItemStack old = snapshot.getItem(slot);
+                        int diff = old == null ? item.getAmount() : item.getAmount() - old.getAmount();
+
+                        if (cursor == null) {
+                            cursor = item.clone();
+                            cursor.setAmount(diff);
                         } else {
-                            rewind.push(entry);
+                            cursor.setAmount(cursor.getAmount() + diff);
                         }
-                    }
-                });
 
-                Map<Integer, ItemStack> restore = new HashMap<>();
-                InventoryView view = event.getView();
-                ItemStack cursor = event.getCursor();
-                Map.Entry<Integer, ItemStack> entry;
-                while (!rewind.empty()) {
-                    entry = rewind.pop();
-                    ItemStack value = entry.getValue();
-                    ItemStack old = view.getItem(entry.getKey());
-                    ItemStack diff = value.clone();
-                    diff.setAmount(diff.getAmount() - old.getAmount());
-
-                    if (cursor == null) {
-                        cursor = diff;
+                        rollback.put(slot, old);
                     } else {
-                        cursor.setAmount(cursor.getAmount() + diff.getAmount());
+                        Component component = optional.get();
+                        Position inventoryPosition = Position.toPosition(this, slot);
+                        Position componentPosition = getComponents().get(component);
+                        Position normalizedPosition = Position.normalize(inventoryPosition, componentPosition);
+                        component.setItem(player, normalizedPosition, item);
                     }
-
-                    restore.put(entry.getKey(), old);
-                }
-                event.setCursor(cursor);
-
-                if (!restore.isEmpty()) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(), () -> {
-                        restore.forEach((key, value) -> player.getOpenInventory().setItem(key, value));
-                        player.updateInventory();
-                    }, 1);
                 }
             }
+
+            if (!rollback.isEmpty()) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(), () -> {
+                    rollback.forEach((slot, item) -> player.getOpenInventory().setItem(slot, item));
+                    player.updateInventory();
+                }, 1);
+            }
+
+            event.setCursor(cursor);
         }
     }
 
