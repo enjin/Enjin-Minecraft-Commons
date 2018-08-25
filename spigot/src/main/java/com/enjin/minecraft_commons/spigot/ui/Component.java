@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Optional;
+
 public interface Component {
 
     Dimension getDimension();
@@ -52,5 +54,9 @@ public interface Component {
     void setAllowDrag(boolean allowDrag);
 
     void setAllowPickup(boolean allowPickup);
+
+    Optional<SlotUpdateHandler> getSlotUpdateHandler();
+
+    Optional<ClickHandler> getClickHandler();
 
 }

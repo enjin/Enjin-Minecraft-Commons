@@ -95,6 +95,7 @@ public abstract class Menu extends AbstractMenu implements Listener {
                         Position componentPosition = getComponents().get(component);
                         Position normalizedPosition = Position.normalize(inventoryPosition, componentPosition);
                         component.setItem(player, normalizedPosition, item);
+                        component.getSlotUpdateHandler().ifPresent(handler -> handler.handle(player, slot, snapshot.getItem(slot), item));
                     }
                 }
             }
@@ -142,9 +143,22 @@ public abstract class Menu extends AbstractMenu implements Listener {
                     if (component.isAllowPlace() && Stream.of(placeActions).anyMatch(a -> a.equals(event.getAction()))) {
                         event.setResult(Event.Result.DEFAULT);
                         handlePlace(player, slot, event.getCurrentItem(), event.getCursor(), component);
+
+                        ItemStack existing = event.getCurrentItem();
+                        ItemStack placed = event.getCursor();
+
+                        if (existing != null && placed != null) {
+                            placed = placed.clone();
+                            placed.setAmount(placed.getAmount() + existing.getAmount());
+                        }
+
+                        final ItemStack newItem = placed;
+
+                        component.getSlotUpdateHandler().ifPresent(handler -> handler.handle(player, slot, existing, newItem));
                     } else if (component.isAllowPickup() && Stream.of(pickupActions).anyMatch(a -> a.equals(event.getAction()))) {
                         event.setResult(Event.Result.DEFAULT);
                         handlePickup(player, slot, event.getCurrentItem(), event.getCursor(), component);
+                        component.getSlotUpdateHandler().ifPresent(handler -> handler.handle(player, slot, event.getCurrentItem(), event.getCursor()));
                     } else {
                         handleClick(player, event.getClick(), slot, component);
                     }

@@ -7,6 +7,7 @@ import com.enjin.minecraft_commons.spigot.ui.Container;
 import com.enjin.minecraft_commons.spigot.ui.Dimension;
 import com.enjin.minecraft_commons.spigot.ui.ItemStackKey;
 import com.enjin.minecraft_commons.spigot.ui.Position;
+import com.enjin.minecraft_commons.spigot.ui.SlotUpdateHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;
@@ -26,6 +27,7 @@ public abstract class MenuComponent implements Component {
     private final Map<ItemStackKey, ClickAction> actions;
     private Dimension dimension;
     private ClickHandler clickHandler;
+    private SlotUpdateHandler slotUpdateHandler;
     private Collection<Consumer<Player>> cleanupTasks;
     private boolean allowPlace;
     private boolean allowDrag;
@@ -124,7 +126,19 @@ public abstract class MenuComponent implements Component {
         return collection;
     }
 
+    public Optional<ClickHandler> getClickHandler() {
+        return Optional.ofNullable(this.clickHandler);
+    }
+
     public void setClickHandler(ClickHandler clickHandler) {
         this.clickHandler = clickHandler;
+    }
+
+    public Optional<SlotUpdateHandler> getSlotUpdateHandler() {
+        return Optional.ofNullable(this.slotUpdateHandler);
+    }
+
+    public void setSlotUpdateHandler(SlotUpdateHandler slotUpdateHandler) {
+        this.slotUpdateHandler = slotUpdateHandler;
     }
 }
