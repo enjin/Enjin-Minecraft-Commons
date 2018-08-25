@@ -127,4 +127,8 @@ public abstract class MenuComponent implements Component {
         this.cleanupTasks.add(collection::remove);
         return collection;
     }
+
+    public void setClickHandler(ClickHandler clickHandler) {
+        this.clickHandler = clickHandler;
+    }
 }
