@@ -68,10 +68,6 @@ public abstract class MenuComponent implements Component {
         optionalAction.ifPresent(action -> action.act(player));
     }
 
-    public void onClick(ClickHandler handler) {
-        this.clickHandler = handler;
-    }
-
     @Override
     public void draw(Player player) {
     }
