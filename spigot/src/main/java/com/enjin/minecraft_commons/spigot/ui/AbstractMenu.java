@@ -185,6 +185,12 @@ public abstract class AbstractMenu implements Container {
         }
 
         Inventory inventory = getInventory(player, true);
+        this.getComponents().keySet().forEach(component -> {
+            component.draw(player);
+            component.onOpen(player);
+        });
+        setMenu(player, this);
+
         InventoryView view = player.openInventory(inventory);
 
         if (!view.getTopInventory().equals(inventory)) {
@@ -192,8 +198,6 @@ public abstract class AbstractMenu implements Container {
         }
 
         this.onOpen(player);
-        this.getComponents().keySet().forEach(component -> component.onOpen(player));
-        update(player);
         return this;
     }
 
