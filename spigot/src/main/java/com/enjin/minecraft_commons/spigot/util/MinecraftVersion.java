@@ -65,12 +65,4 @@ public enum MinecraftVersion {
     public String getRawPackage() {
         return rawPackage;
     }
-
-    public Class getNMSClass(String target) throws ClassNotFoundException {
-        return Class.forName(String.format("net.minecraft.server.%s.%s", rawPackage, target));
-    }
-
-    public Class getCraftBukkitClass(String target) throws ClassNotFoundException {
-        return Class.forName(String.format("org.bukkit.craftbukkit.%s.%s", rawPackage, target));
-    }
 }

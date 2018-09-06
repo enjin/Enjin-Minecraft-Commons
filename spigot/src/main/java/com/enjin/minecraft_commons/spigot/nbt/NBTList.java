@@ -1,5 +1,6 @@
 package com.enjin.minecraft_commons.spigot.nbt;
 
+import com.enjin.minecraft_commons.spigot.reflect.NMSClasses;
 import com.enjin.minecraft_commons.spigot.util.MethodNames;
 
 import java.lang.reflect.Method;
@@ -31,8 +32,8 @@ public class NBTList {
         NBTListCompound obj;
 
         try {
-            Method method = list.getClass().getMethod("add", NBTReflection.getNBTBase());
-            Object compound = NBTReflection.getNBTTagCompound().newInstance();
+            Method method = list.getClass().getMethod("add", NMSClasses.getNBTBase());
+            Object compound = NMSClasses.getNBTTagCompound().newInstance();
             method.invoke(list, compound);
             obj = new NBTListCompound(this, compound);
         } catch (Exception ex) {
@@ -64,8 +65,8 @@ public class NBTList {
             throw new IllegalStateException("This list does not support adding strings");
 
         try {
-            Method method = list.getClass().getMethod("add", NBTReflection.getNBTBase());
-            method.invoke(list, NBTReflection.getNBTTagString().getConstructor(String.class).newInstance(s));
+            Method method = list.getClass().getMethod("add", NMSClasses.getNBTBase());
+            method.invoke(list, NMSClasses.getNBTTagString().getConstructor(String.class).newInstance(s));
             save();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -77,8 +78,8 @@ public class NBTList {
             throw new IllegalStateException("This list does not support setting strings");
 
         try {
-            Method method = list.getClass().getMethod("a", int.class, NBTReflection.getNBTBase());
-            method.invoke(list, index, NBTReflection.getNBTTagString().getConstructor(String.class).newInstance(s));
+            Method method = list.getClass().getMethod("a", int.class, NMSClasses.getNBTBase());
+            method.invoke(list, index, NMSClasses.getNBTTagString().getConstructor(String.class).newInstance(s));
             save();
         } catch (Exception ex) {
             ex.printStackTrace();

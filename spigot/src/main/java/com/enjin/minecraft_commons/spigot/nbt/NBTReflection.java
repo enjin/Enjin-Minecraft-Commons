@@ -1,5 +1,7 @@
 package com.enjin.minecraft_commons.spigot.nbt;
 
+import com.enjin.minecraft_commons.spigot.reflect.BukkitClasses;
+import com.enjin.minecraft_commons.spigot.reflect.NMSClasses;
 import com.enjin.minecraft_commons.spigot.util.GsonWrapper;
 import com.enjin.minecraft_commons.spigot.util.MethodNames;
 import com.enjin.minecraft_commons.spigot.util.MinecraftVersion;
@@ -18,74 +20,8 @@ import java.util.Stack;
 
 public class NBTReflection {
 
-    public static Class getNMSClass(String target) {
-        Class clazz;
-        try {
-            clazz = MinecraftVersion.getVersion().getNMSClass(target);
-        } catch (ClassNotFoundException ex) {
-            clazz = null;
-            ex.printStackTrace();
-        }
-        return clazz;
-    }
-
-    public static Class getCraftClass(String target) {
-        Class clazz;
-        try {
-            clazz = MinecraftVersion.getVersion().getCraftBukkitClass(target);
-        } catch (ClassNotFoundException ex) {
-            clazz = null;
-            ex.printStackTrace();
-        }
-        return clazz;
-    }
-
-    public static Class getCraftItemStack() {
-        return getCraftClass("inventory.CraftItemStack");
-    }
-
-    public static Class getCraftEntity() {
-        return getCraftClass("entity.CraftEntity");
-    }
-
-    public static Class getCraftWorld() {
-        return getCraftClass("CraftWorld");
-    }
-
-    public static Class getNBTBase() {
-        return getNMSClass("NBTBase");
-    }
-
-    public static Class getNBTTagString() {
-        return getNMSClass("NBTTagString");
-    }
-
-    public static Class getNBTTagCompound() {
-        return getNMSClass("NBTTagCompound");
-    }
-
-    public static Class getNBTCompressedStreamTools() {
-        return getNMSClass("NBTCompressedStreamTools");
-    }
-
-    public static Class getMojangsonParser() {
-        return getNMSClass("MojangsonParser");
-    }
-
-    public static Class getNMSItemStack() {
-        return getNMSClass("ItemStack");
-    }
-
-    public static Class getNMSTileEntity() {
-        return getNMSClass("TileEntity");
-    }
-
-    public static Class getNMSBlockPosition() {
-        return getNMSClass("BlockPosition");
-    }
-
     public static Object createNBTTagCompound() {
-        Class clazz = getNBTTagCompound();
+        Class clazz = NMSClasses.getNBTTagCompound();
         Object obj;
         try {
             obj = clazz.newInstance();
@@ -96,7 +32,7 @@ public class NBTReflection {
     }
 
     public static Object createBlockPosition(int x, int y, int z) {
-        Class clazz = getNMSBlockPosition();
+        Class clazz = NMSClasses.getBlockPosition();
         Object obj;
         try {
             obj = clazz.getConstructor(int.class, int.class, int.class).newInstance(x, y, z);
@@ -107,7 +43,7 @@ public class NBTReflection {
     }
 
     public static Object createNMSItemStack(ItemStack item) {
-        Class clazz = getCraftItemStack();
+        Class clazz = BukkitClasses.getCraftItemStack();
         Method method;
         Object obj;
         try {
@@ -120,7 +56,7 @@ public class NBTReflection {
     }
 
     public static Object createNMSEntity(Entity entity) {
-        Class clazz = getCraftEntity();
+        Class clazz = BukkitClasses.getCraftEntity();
         Method method;
         Object obj;
         try {
@@ -133,7 +69,7 @@ public class NBTReflection {
     }
 
     public static Object parseNBT(String json) {
-        Class clazz = getMojangsonParser();
+        Class clazz = NMSClasses.getMojangsonParser();
         Method method;
         Object obj;
         try {
@@ -146,7 +82,7 @@ public class NBTReflection {
     }
 
     public static Object readNBTFile(FileInputStream stream) {
-        Class clazz = getNBTCompressedStreamTools();
+        Class clazz = NMSClasses.getNBTCompressedStreamTools();
         Method method;
         Object obj;
         try {
@@ -159,11 +95,11 @@ public class NBTReflection {
     }
 
     public static Object saveNBTFile(Object nbt, FileOutputStream stream) {
-        Class clazz = getNBTCompressedStreamTools();
+        Class clazz = NMSClasses.getNBTCompressedStreamTools();
         Method method;
         Object obj;
         try {
-            method = clazz.getMethod("a", getNBTTagCompound(), OutputStream.class);
+            method = clazz.getMethod("a", NMSClasses.getNBTTagCompound(), OutputStream.class);
             obj = method.invoke(clazz, nbt, stream);
         } catch (Exception ex) {
             obj = null;
@@ -172,7 +108,7 @@ public class NBTReflection {
     }
 
     public static ItemStack getBukkitItemStack(Object item) {
-        Class clazz = getCraftItemStack();
+        Class clazz = BukkitClasses.getCraftItemStack();
         Method method;
         Object obj;
         try {
@@ -198,10 +134,10 @@ public class NBTReflection {
     }
 
     public static Object convertNBTCompoundToNMSItem(NBTCompound compound) {
-        Class clazz = getNMSItemStack();
+        Class clazz = NMSClasses.getItemStack();
         Object obj;
         try {
-            obj = clazz.getConstructor(getNBTTagCompound()).newInstance(toCompound(compound.getCompound(), compound));
+            obj = clazz.getConstructor(NMSClasses.getNBTTagCompound()).newInstance(toCompound(compound.getCompound(), compound));
         } catch (Exception ex) {
             obj = null;
         }
@@ -213,7 +149,7 @@ public class NBTReflection {
         Method method;
         NBTContainer container;
         try {
-            method = clazz.getMethod("save", getNBTTagCompound());
+            method = clazz.getMethod("save", NMSClasses.getNBTTagCompound());
             container = new NBTContainer(method.invoke(item, createNBTTagCompound()));
         } catch (Exception ex) {
             container = null;
@@ -227,7 +163,7 @@ public class NBTReflection {
         Object tag;
         Object obj;
         try {
-            method = clazz.getMethod(MethodNames.getEntityNbtGetterMethodName(), getNBTTagCompound());
+            method = clazz.getMethod(MethodNames.getEntityNbtGetterMethodName(), NMSClasses.getNBTTagCompound());
             tag = createNBTTagCompound();
             obj = method.invoke(item, tag);
             if (obj == null)
@@ -242,7 +178,7 @@ public class NBTReflection {
         Method method;
         Object obj;
         try {
-            method = entity.getClass().getMethod(MethodNames.getEntityNbtSetterMethodName(), getNBTTagCompound());
+            method = entity.getClass().getMethod(MethodNames.getEntityNbtSetterMethodName(), NMSClasses.getNBTTagCompound());
             method.invoke(entity, tag);
             obj = tag;
         } catch (Exception ex) {
@@ -274,10 +210,10 @@ public class NBTReflection {
         Object obj;
         try {
             pos = createBlockPosition(tile.getX(), tile.getY(), tile.getZ());
-            craftWorld = getCraftWorld().cast(tile.getWorld());
+            craftWorld = BukkitClasses.getCraftWorld().cast(tile.getWorld());
             nmsWorld = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
             entity = nmsWorld.getClass().getMethod("getTileEntity", pos.getClass()).invoke(nmsWorld, pos);
-            method = getNMSTileEntity().getMethod(MethodNames.getTileDataMethodName(), getNBTTagCompound());
+            method = NMSClasses.getTileEntity().getMethod(MethodNames.getTileDataMethodName(), NMSClasses.getNBTTagCompound());
             tag = createNBTTagCompound();
             obj = method.invoke(entity, tag);
             if (obj == null)
@@ -296,10 +232,10 @@ public class NBTReflection {
         Object entity;
         try {
             pos = createBlockPosition(tile.getX(), tile.getY(), tile.getZ());
-            craftWorld = getCraftWorld().cast(tile.getWorld());
+            craftWorld = BukkitClasses.getCraftWorld().cast(tile.getWorld());
             nmsWorld = craftWorld.getClass().getMethod("getHandle").invoke(craftWorld);
             entity = nmsWorld.getClass().getMethod("getTileEntity", pos.getClass()).invoke(nmsWorld, pos);
-            method = getNMSTileEntity().getMethod("a", getNBTTagCompound());
+            method = NMSClasses.getTileEntity().getMethod("a", NMSClasses.getNBTTagCompound());
             method.invoke(entity, compound);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -330,7 +266,7 @@ public class NBTReflection {
                 Object comp = toCompound(tag, compound);
                 Method method;
                 try {
-                    method = tag.getClass().getMethod("set", String.class, getNBTBase());
+                    method = tag.getClass().getMethod("set", String.class, NMSClasses.getNBTBase());
                     method.invoke(comp, name, createNBTTagCompound());
                     compound.setCompound(tag);
                 } catch (Exception ex) {
@@ -371,7 +307,7 @@ public class NBTReflection {
             Object comp = toCompound(tag, first);
             Method method;
             try {
-                method = comp.getClass().getMethod("a", getNBTTagCompound());
+                method = comp.getClass().getMethod("a", NMSClasses.getNBTTagCompound());
                 method.invoke(comp, second.getCompound());
                 first.setCompound(tag);
             } catch (Exception ex) {
@@ -421,7 +357,7 @@ public class NBTReflection {
 
     public static void set(NBTCompound compound, String key, Object value) throws Throwable {
         if (validCompound(compound))
-            setValue(compound, key, value, "set", getNBTBase());
+            setValue(compound, key, value, "set", NMSClasses.getNBTBase());
         else
             throw new Throwable("The provided compound is not valid.");
     }
