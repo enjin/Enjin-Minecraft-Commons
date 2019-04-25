@@ -59,4 +59,6 @@ public interface Component {
 
     Optional<ClickHandler> getClickHandler();
 
+    int size();
+
 }

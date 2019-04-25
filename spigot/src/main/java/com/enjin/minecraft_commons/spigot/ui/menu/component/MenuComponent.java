@@ -141,4 +141,8 @@ public abstract class MenuComponent implements Component {
     public void setSlotUpdateHandler(SlotUpdateHandler slotUpdateHandler) {
         this.slotUpdateHandler = slotUpdateHandler;
     }
+
+    public int size() {
+        return this.dimension.getWidth() * this.dimension.getHeight();
+    }
 }
