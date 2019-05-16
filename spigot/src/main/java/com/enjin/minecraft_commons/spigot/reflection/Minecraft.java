@@ -4,6 +4,7 @@ import com.enjin.minecraft_commons.spigot.reflection.resolver.ConstructorResolve
 import com.enjin.minecraft_commons.spigot.reflection.resolver.FieldResolver;
 import com.enjin.minecraft_commons.spigot.reflection.resolver.MethodResolver;
 import org.bukkit.Bukkit;
+// TODO: Remove this dependency as it will break in newer version of Java
 import sun.reflect.ConstructorAccessor;
 
 import java.lang.reflect.Constructor;
