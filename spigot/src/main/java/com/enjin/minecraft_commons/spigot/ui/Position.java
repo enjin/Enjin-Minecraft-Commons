@@ -51,6 +51,10 @@ public class Position {
         return new Position(slot % container.getDimension().getWidth(), slot / container.getDimension().getWidth());
     }
 
+    public static Position toPosition(Component component, int slot) {
+        return new Position(slot % component.getDimension().getWidth(), slot / component.getDimension().getWidth());
+    }
+
     public static Position normalize(Position parentPosition, Position childOriginPosition) {
         return new Position(parentPosition.x - childOriginPosition.x, parentPosition.y - childOriginPosition.y);
     }
