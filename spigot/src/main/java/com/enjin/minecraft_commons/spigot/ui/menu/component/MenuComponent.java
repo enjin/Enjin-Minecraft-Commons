@@ -49,6 +49,11 @@ public abstract class MenuComponent implements Component {
         this.actions.put(ItemStackKey.of(stack), new ClickAction(action, type, moreTypes));
     }
 
+    public void removeAction(ItemStack stack) {
+        if (stack == null) return;
+        this.actions.remove(ItemStackKey.of(stack));
+    }
+
     @Override
     public void onClick(Player player, ClickType click, Position position) {
         if (this.clickHandler != null && !this.clickHandler.handle(player, click, position)) {
