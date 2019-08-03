@@ -23,7 +23,7 @@ public class SimpleMenuComponent extends MenuComponent {
     }
 
     public void setItem(Position position, ItemStack stack) {
-        this.contents[position.getY()][position.getX()] = stack;
+        setItem(position.getX(), position.getY(), stack);
     }
 
     public void setItem(Position position, ItemStack stack, Consumer<Player> action) {
@@ -31,8 +31,16 @@ public class SimpleMenuComponent extends MenuComponent {
         this.addAction(stack, action, ClickType.LEFT);
     }
 
+    public void setItem(int x, int y, ItemStack stack) {
+        this.contents[x][y] = stack;
+    }
+
     public void removeItem(Position position) {
-        this.contents[position.getY()][position.getX()] = null;
+        removeItem(position.getX(), position.getY());
+    }
+
+    public void removeItem(int x, int y) {
+        this.contents[x][y] = null;
     }
 
     public void setToggle(Position position, boolean onState, ItemStack on, ItemStack off, BiConsumer<Player, Boolean> toggle) {
