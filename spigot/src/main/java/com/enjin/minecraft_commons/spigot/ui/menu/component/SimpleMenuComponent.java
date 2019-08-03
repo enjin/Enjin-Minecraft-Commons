@@ -43,6 +43,14 @@ public class SimpleMenuComponent extends MenuComponent {
         this.contents[x][y] = null;
     }
 
+    public ItemStack getItem(Position position) {
+        return getItem(position.getX(), position.getY());
+    }
+
+    public ItemStack getItem(int x, int y) {
+        return this.contents[x][y];
+    }
+
     public void setToggle(Position position, boolean onState, ItemStack on, ItemStack off, BiConsumer<Player, Boolean> toggle) {
         this.addAction(on, player -> {
             toggle.accept(player, false);
