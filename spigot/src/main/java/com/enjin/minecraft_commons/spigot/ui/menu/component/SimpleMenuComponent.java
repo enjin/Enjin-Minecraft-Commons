@@ -32,7 +32,7 @@ public class SimpleMenuComponent extends MenuComponent {
     }
 
     public void setItem(int x, int y, ItemStack stack) {
-        this.contents[x][y] = stack;
+        this.contents[y][x] = stack;
     }
 
     public void removeItem(Position position) {
@@ -40,7 +40,7 @@ public class SimpleMenuComponent extends MenuComponent {
     }
 
     public void removeItem(int x, int y) {
-        this.contents[x][y] = null;
+        this.contents[y][x] = null;
     }
 
     public ItemStack getItem(Position position) {
@@ -48,7 +48,7 @@ public class SimpleMenuComponent extends MenuComponent {
     }
 
     public ItemStack getItem(int x, int y) {
-        return this.contents[x][y];
+        return this.contents[y][x];
     }
 
     public void setToggle(Position position, boolean onState, ItemStack on, ItemStack off, BiConsumer<Player, Boolean> toggle) {
