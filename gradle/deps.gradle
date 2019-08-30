@@ -3,7 +3,7 @@ ext.deps = [
         javaCommons: 'com.enjin:java_commons:0.3.0-SNAPSHOT',
 
         // shadow Dependencies
-        spigot: 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT',
+        spigot: 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT',
 
         // testCompile Dependencies
         junit: 'junit:junit:4.12',

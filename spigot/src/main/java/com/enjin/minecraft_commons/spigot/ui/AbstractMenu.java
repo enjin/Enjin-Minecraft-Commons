@@ -32,6 +32,7 @@ public abstract class AbstractMenu implements Container {
     private BiConsumer<Player, AbstractMenu> openConsumer;
     private BiConsumer<Player, AbstractMenu> closeConsumer;
     private final Map<Player, Inventory> playerInventories;
+    private final Map<Player, InventoryView> playerInventoryViews;
     private Map<Component, Position> components;
     private Component[][] bySlot;
     private boolean nameSwitch;
@@ -41,9 +42,12 @@ public abstract class AbstractMenu implements Container {
     public AbstractMenu(String name, Dimension dimension) {
         this.defaultName = name;
         this.dimension = dimension;
-        this.openConsumer = (player, menu) -> {};
-        this.closeConsumer = (player, menu) -> {};
+        this.openConsumer = (player, menu) -> {
+        };
+        this.closeConsumer = (player, menu) -> {
+        };
         this.playerInventories = new HashMap<>();
+        this.playerInventoryViews = new HashMap<>();
         this.components = new HashMap<>();
         this.bySlot = new Component[dimension.getHeight()][dimension.getWidth()];
         this.nameProvider = player -> null;
@@ -71,6 +75,12 @@ public abstract class AbstractMenu implements Container {
         return this.playerInventories.computeIfAbsent(player, createIfAbsent ? this::createInventory : p -> null);
     }
 
+    protected InventoryView getInventoryView(Player player, boolean createIfAbsent) {
+        return this.playerInventoryViews.computeIfAbsent(player, p -> createIfAbsent
+                ? player.openInventory(getInventory(player, createIfAbsent))
+                : null);
+    }
+
     protected int getSize() {
         return this.dimension.getWidth() * this.dimension.getHeight();
     }
@@ -84,6 +94,7 @@ public abstract class AbstractMenu implements Container {
             this.closeConsumer.accept(player, this);
         }
         this.playerInventories.remove(player);
+        this.playerInventoryViews.remove(player);
     }
 
     protected void closeMenu(Player player) {
@@ -118,12 +129,14 @@ public abstract class AbstractMenu implements Container {
     }
 
     public AbstractMenu setOpenConsumer(BiConsumer<Player, AbstractMenu> consumer) {
-        this.openConsumer = consumer != null ? consumer : (player, menu) -> {};
+        this.openConsumer = consumer != null ? consumer : (player, menu) -> {
+        };
         return this;
     }
 
     public AbstractMenu setCloseConsumer(BiConsumer<Player, AbstractMenu> consumer) {
-        this.closeConsumer = consumer != null ? consumer : (player, menu) -> {};
+        this.closeConsumer = consumer != null ? consumer : (player, menu) -> {
+        };
         return this;
     }
 
@@ -162,7 +175,7 @@ public abstract class AbstractMenu implements Container {
             return;
         }
 
-        if (!getName(player).equalsIgnoreCase(getInventory(player, true).getTitle())) {
+        if (!getName(player).equalsIgnoreCase(getInventoryView(player, true).getTitle())) {
             this.nameSwitch = true;
             Inventory inventory = getInventory(player, true);
             InventoryView view = player.openInventory(inventory);
@@ -173,6 +186,7 @@ public abstract class AbstractMenu implements Container {
 
             this.nameSwitch = false;
             this.playerInventories.put(player, view.getTopInventory());
+            this.playerInventoryViews.put(player, view);
         }
 
         this.components.keySet().forEach(component -> component.draw(player));
