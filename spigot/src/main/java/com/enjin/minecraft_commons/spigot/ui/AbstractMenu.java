@@ -198,18 +198,12 @@ public abstract class AbstractMenu implements Container {
             return this;
         }
 
-        Inventory inventory = getInventory(player, true);
+        InventoryView view = getInventoryView(player, true);
         this.getComponents().keySet().forEach(component -> {
             component.draw(player);
             component.onOpen(player);
         });
         setMenu(player, this);
-
-        InventoryView view = player.openInventory(inventory);
-
-        if (!view.getTopInventory().equals(inventory)) {
-            throw new IllegalStateException("Failed to open inventory (was the InventoryOpenEvent cancelled?)");
-        }
 
         this.onOpen(player);
         return this;
