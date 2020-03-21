@@ -1,13 +1,8 @@
 package com.enjin.minecraft_commons.spigot.reflection;
 
-import com.enjin.minecraft_commons.spigot.reflection.resolver.ConstructorResolver;
 import com.enjin.minecraft_commons.spigot.reflection.resolver.FieldResolver;
-import com.enjin.minecraft_commons.spigot.reflection.resolver.MethodResolver;
 import org.bukkit.Bukkit;
-// TODO: Remove this dependency as it will break in newer version of Java
-import sun.reflect.ConstructorAccessor;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -136,22 +131,7 @@ public class Minecraft {
                 try {
                     Field     valuesField = new FieldResolver(Version.class).resolve("$VALUES");
                     Version[] oldValues   = (Version[]) valuesField.get(null);
-                    Version[] newValues   = new Version[oldValues.length + 1];
-                    Version dynamicVersion = (Version) newEnumInstance(Version.class, new Class[]{
-                            String.class,
-                            int.class,
-                            int.class
-                    }, new Object[]{
-                            pack,
-                            newValues.length - 1,
-                            numVersion
-                    });
-
-                    System.arraycopy(oldValues, 0, newValues, 0, oldValues.length);
-                    newValues[newValues.length - 1] = dynamicVersion;
-                    valuesField.set(null, newValues);
-
-                    System.out.println(String.format("[ReflectionHelper] Injected dynamic version %s (#%s).", pack, numVersion));
+                    valuesField.set(null, oldValues);
                 } catch (ReflectiveOperationException e) {
                     e.printStackTrace();
                 }
@@ -164,19 +144,6 @@ public class Minecraft {
         public String toString() {
             return name() + " (" + version() + ")";
         }
-    }
-
-    public static Object newEnumInstance(Class clazz, Class[] types, Object[] values) throws ReflectiveOperationException {
-        Constructor constructor = new ConstructorResolver(clazz).resolve(types);
-        Field accessorField = new FieldResolver(Constructor.class).resolve("constructorAccessor");
-        ConstructorAccessor constructorAccessor = (ConstructorAccessor) accessorField.get(constructor);
-
-        if (constructorAccessor == null) {
-            new MethodResolver(Constructor.class).resolve("acquireConstructorAccessor").invoke(constructor);
-            constructorAccessor = (ConstructorAccessor) accessorField.get(constructor);
-        }
-
-        return constructorAccessor.newInstance(values);
     }
 
 }
