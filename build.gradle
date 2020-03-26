@@ -48,8 +48,6 @@ subprojects {
     }
 
     dependencies {
-        shadow deps.javaCommons
-
         testCompile deps.junit
         testCompile deps.mockito
         testCompile deps.powermockMockito
