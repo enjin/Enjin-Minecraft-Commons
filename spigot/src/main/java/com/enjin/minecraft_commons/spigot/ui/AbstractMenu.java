@@ -340,7 +340,7 @@ public abstract class AbstractMenu implements Container {
         menu.playerInventories.put(player, menu.getInventory(player, true));
     }
 
-    public static boolean hasAnyuMenu(Player player) {
+    public static boolean hasAnyMenu(Player player) {
         return getMenu(player).isPresent();
     }
 
