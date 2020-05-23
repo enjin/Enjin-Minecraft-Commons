@@ -5,38 +5,29 @@ import com.enjin.minecraft_commons.spigot.ui.ClickHandler;
 import com.enjin.minecraft_commons.spigot.ui.Component;
 import com.enjin.minecraft_commons.spigot.ui.Container;
 import com.enjin.minecraft_commons.spigot.ui.Dimension;
-import com.enjin.minecraft_commons.spigot.ui.ItemStackKey;
 import com.enjin.minecraft_commons.spigot.ui.Position;
 import com.enjin.minecraft_commons.spigot.ui.SlotUpdateHandler;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class MenuComponent implements Component {
 
     private Container parent;
-    private final Map<ItemStackKey, ClickAction> actions;
+    private final Map<Position, Stack<ClickAction>> actions = new HashMap<>();
     private Dimension dimension;
     private ClickHandler clickHandler;
     private SlotUpdateHandler slotUpdateHandler;
-    private Collection<Consumer<Player>> cleanupTasks;
+    private Collection<Consumer<Player>> cleanupTasks = new LinkedList<>();
     private boolean allowPlace;
     private boolean allowDrag;
     private boolean allowPickup;
 
     public MenuComponent(Dimension dimension) {
         this.dimension = dimension;
-        this.actions = Maps.newHashMap();
-        this.cleanupTasks = Lists.newLinkedList();
     }
 
     @Override
@@ -44,35 +35,43 @@ public abstract class MenuComponent implements Component {
         return this.dimension;
     }
 
-    public void addAction(ItemStack stack, Consumer<Player> action, ClickType type, ClickType... moreTypes) {
-        if (stack == null) return;
-        this.actions.put(ItemStackKey.of(stack), new ClickAction(action, type, moreTypes));
+    public void addAction(Position position, Consumer<Player> action, ClickType type, ClickType... moreTypes) {
+        if (position != null
+                && (position.getX() >= 0 && position.getX() < dimension.getWidth())
+                && (position.getY() >= 0 && position.getY() < dimension.getHeight())) {
+            ClickAction clickAction = new ClickAction(action, type, moreTypes);
+            if (this.actions.containsKey(position)) {
+                this.actions.get(position).add(clickAction);
+            } else {
+                Stack<ClickAction> actions = new Stack<>();
+                actions.add(clickAction);
+                this.actions.put(position, actions);
+            }
+        }
     }
 
-    public void removeAction(ItemStack stack) {
-        if (stack == null) return;
-        this.actions.remove(ItemStackKey.of(stack));
+    public void removeAction(Position position) {
+        if (position != null)
+            this.actions.remove(position);
+    }
+
+    public void removeAllActions() {
+        this.actions.clear();
     }
 
     @Override
     public void onClick(Player player, ClickType click, Position position) {
-        if (this.clickHandler != null && !this.clickHandler.handle(player, click, position)) {
+        if (this.clickHandler != null && !this.clickHandler.handle(player, click, position) && position != null)
             return;
-        }
 
-        Optional<ItemStack> optionalItem = getParent().getItem(player, this, position);
-        if (!optionalItem.isPresent()) {
+        Stack<ClickAction> actions = this.actions.get(position);
+        if (actions == null)
             return;
-        }
-        Optional<ClickAction> optionalAction = optionalItem.map(ItemStackKey::of).map(this.actions::get).filter(Objects::nonNull);
-        if (!optionalAction.isPresent()) {
-            return;
-        }
-        optionalAction = optionalAction.filter(action -> action.shouldAct(click));
-        if (!optionalAction.isPresent()) {
-            return;
-        }
-        optionalAction.ifPresent(action -> action.act(player));
+
+        actions.forEach(clickAction -> {
+            if (clickAction.shouldAct(click))
+                clickAction.act(player);
+        });
     }
 
     @Override
