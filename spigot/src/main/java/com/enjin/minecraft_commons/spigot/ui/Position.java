@@ -1,5 +1,7 @@
 package com.enjin.minecraft_commons.spigot.ui;
 
+import java.util.Objects;
+
 public class Position {
 
     private final int x;
@@ -19,15 +21,19 @@ public class Position {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        } else if (obj == null || obj.getClass() != this.getClass()) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
 
-        Position other = (Position) obj;
-        return this.x == other.x && this.y == other.y;
+        Position position = (Position) o;
+        return x == position.x && y == position.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 
     @Override

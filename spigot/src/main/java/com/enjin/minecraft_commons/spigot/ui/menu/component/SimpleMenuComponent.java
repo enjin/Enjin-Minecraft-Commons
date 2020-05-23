@@ -28,7 +28,7 @@ public class SimpleMenuComponent extends MenuComponent {
 
     public void setItem(Position position, ItemStack stack, Consumer<Player> action) {
         this.setItem(position, stack);
-        this.addAction(stack, action, ClickType.LEFT);
+        this.addAction(position, action, ClickType.LEFT);
     }
 
     public void setItem(int x, int y, ItemStack stack) {
@@ -52,14 +52,10 @@ public class SimpleMenuComponent extends MenuComponent {
     }
 
     public void setToggle(Position position, boolean onState, ItemStack on, ItemStack off, BiConsumer<Player, Boolean> toggle) {
-        this.addAction(on, player -> {
-            toggle.accept(player, false);
-            setItem(position, off);
-            getParent().updateAll();
-        }, ClickType.LEFT);
-        this.addAction(off, player -> {
-            toggle.accept(player, true);
-            setItem(position, on);
+        ToggleConsumer consumer = new ToggleConsumer(toggle, onState);
+        this.addAction(position, player -> {
+            consumer.accept(player);
+            setItem(position, consumer.getState() ? on : off);
             getParent().updateAll();
         }, ClickType.LEFT);
         this.setItem(position, onState ? on : off);
@@ -97,5 +93,30 @@ public class SimpleMenuComponent extends MenuComponent {
                 this.setItem(player, pos, this.contents[y][x]);
             });
         });
+    }
+
+    protected static class ToggleConsumer implements Consumer<Player> {
+
+        private final BiConsumer<Player, Boolean> toggleAction;
+        private boolean state;
+
+        private ToggleConsumer() {
+            throw new IllegalStateException();
+        }
+
+        ToggleConsumer(BiConsumer<Player, Boolean> toggleAction, boolean state) {
+            this.toggleAction = toggleAction;
+            this.state = state;
+        }
+
+        @Override
+        public void accept(Player player) {
+            this.state = !this.state;
+            this.toggleAction.accept(player, this.state);
+        }
+
+        public boolean getState() {
+            return this.state;
+        }
     }
 }
