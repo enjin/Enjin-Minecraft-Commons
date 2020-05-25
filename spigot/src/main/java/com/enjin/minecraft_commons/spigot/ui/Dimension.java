@@ -10,6 +10,10 @@ public class Dimension {
         this.height = height;
     }
 
+    public int getArea() {
+        return width * height;
+    }
+
     public int getWidth() {
         return width;
     }

@@ -1,6 +1,7 @@
 package com.enjin.minecraft_commons.spigot.ui.menu.component.pagination;
 
 import com.enjin.minecraft_commons.spigot.ui.Dimension;
+import com.enjin.minecraft_commons.spigot.ui.Position;
 import com.google.common.collect.Lists;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,8 +17,27 @@ public class SimplePagedComponent extends PagedComponent {
         this.pages = Lists.newArrayList();
     }
 
+    public void clear() {
+        this.pages.clear();
+    }
+
     public void setItem(int page, int x, int y, ItemStack stack) {
         this.getPage(page)[y][x] = stack;
+    }
+
+    public void setItem(int page, Position position, ItemStack stack) {
+        this.setItem(page, position.getX(), position.getY(), stack);
+    }
+
+    public ItemStack getItem(int page, int x, int y) {
+        if (page >= this.getPageCount())
+            return null;
+
+        return this.pages.get(page)[y][x];
+    }
+
+    public ItemStack getItem(int page, Position position) {
+        return this.getItem(page, position.getX(), position.getY());
     }
 
     @Override
