@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Clean Install" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
+  <configuration default="false" name="Install Spigot Commons" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/spigot" />
