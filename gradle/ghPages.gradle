@@ -1,0 +1,19 @@
+apply plugin: 'org.ajoberstar.git-publish'
+
+gitPublish {
+    repoUri = "${JAVADOC_PUBLISH_URI}"
+    branch = 'gh-pages'
+
+    contents {
+        from(javadoc) {
+            into "/${project.name}/${version}"
+        }
+    }
+
+    preserve {
+        include '**/*'
+        exclude "/${project.name}/${version}"
+    }
+
+    commitMessage = "Publishing javadocs of ${project.name} version ${version}."
+}

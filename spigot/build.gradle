@@ -1,9 +1,15 @@
-/*
-Enforces compiling with the specified compiler if environment variable JAVA#_HOME is set.
-For example, projects that build with Java 7 should have environment variable JAVA7_HOME set.
-*/
-apply from: scriptFile('env.gradle')
-configureJavaCompilers(8)
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath "com.vanniktech:gradle-maven-publish-plugin:${mavenPublishVersion}"
+    }
+}
+
+apply from: "${rootProject.rootDir}/gradle/ghPages.gradle"
+apply from: "${rootProject.rootDir}/gradle/deploy.gradle"
 
 repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
@@ -11,6 +17,4 @@ repositories {
 
 dependencies {
     shadow deps.spigot
-
-    compile project(':core')
 }

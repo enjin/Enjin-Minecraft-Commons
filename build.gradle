@@ -1,76 +1,56 @@
 buildscript {
+    ext.deps = [
+            spigot: "org.spigotmc:spigot-api:${spigotVersion}",
+    ]
+
+    ext.local = new Properties()
+    File file = project.rootProject.file('local.properties')
+    if (file.exists()) local.load(file.newDataInputStream())
+
     repositories {
-        jcenter()
         mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
+        gradlePluginPortal()
     }
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
-    id 'com.bmuschko.clover' version '2.2.0'
+    id 'com.github.johnrengelman.shadow' version "${shadowVersion}"
+    id 'org.ajoberstar.git-publish' version "${gitPublishVersion}"
 }
 
-apply from: 'gradle/util.gradle'
-
-subprojects {
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
-    apply plugin: 'java'
-    apply plugin: 'maven'
-    apply plugin: 'com.github.johnrengelman.shadow'
-    apply plugin: 'com.bmuschko.clover'
-
-    apply from: scriptFile('deps.gradle')
-
-    group 'com.enjin.minecraft_commons'
-    version '0.1.1-SNAPSHOT'
-
-    idea {
-        module {
-            scopes.PROVIDED.plus += [configurations.shadow]
-        }
-    }
-
-    configurations.getByName("clover").extendsFrom(configurations.shadow)
-
-    tasks.build.dependsOn(shadowJar)
-    artifacts.archives shadowJar
-
-    tasks.withType(AbstractCompile) {
-        classpath += configurations.shadow
-    }
+allprojects {
+    group = GROUP
+    version = VERSION_NAME
 
     repositories {
         mavenLocal()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/groups/public/' }
     }
+}
 
-    dependencies {
-        testCompile deps.junit
-        testCompile deps.mockito
-        testCompile deps.powermockMockito
-        testCompile deps.powermockJUnit4
-        testCompile deps.assertj
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'maven'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-        clover deps.clover
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    javadoc {
+        // exclude any implementation packages
+        exclude '**/impl/**'
+        // exclude any implementation classes
+        exclude '**/Impl.java'
     }
 
-    jar {
-        archiveName = "${project.name}-slim.jar"
+    artifacts {
+        archives shadowJar
     }
+}
 
-    shadowJar {
-        archiveName = "${project.name}.jar"
-    }
-
-    clover {
-        testIncludes = ['**/*Test.java']
-
-        report {
-            html = true
-            pdf = true
-        }
-    }
+wrapper {
+    gradleVersion = "${gradleVersion}"
+    distributionType = Wrapper.DistributionType.ALL
 }
