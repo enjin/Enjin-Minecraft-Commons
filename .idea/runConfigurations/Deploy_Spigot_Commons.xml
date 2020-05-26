@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Install Spigot Commons" type="GradleRunConfiguration" factoryName="Gradle" singleton="true">
+  <configuration default="false" name="Deploy Spigot Commons" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/spigot" />
       <option name="externalSystemIdString" value="GRADLE" />
-      <option name="scriptParameters" value="-PRELEASE_SIGNING_ENABLED=false" />
+      <option name="scriptParameters" value="" />
       <option name="taskDescriptions">
         <list />
       </option>
@@ -12,7 +12,7 @@
         <list>
           <option value="clean" />
           <option value="build" />
-          <option value="installArchives" />
+          <option value="uploadArchives" />
         </list>
       </option>
       <option name="vmOptions" value="" />
