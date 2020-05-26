@@ -10,5 +10,9 @@ mavenPublish {
             if (project.local.containsKey('SONATYPE_NEXUS_PASSWORD'))
                 repositoryPassword = local.getProperty('SONATYPE_NEXUS_PASSWORD')
         }
+
+        installArchives {
+            releaseSigningEnabled = false
+        }
     }
 }
