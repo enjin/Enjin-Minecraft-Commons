@@ -171,16 +171,20 @@ public abstract class Menu extends AbstractMenu implements Listener {
         Position pos = getComponents().get(component);
         Position slotPos = Position.toPosition(this, slot);
         Position offsetPos = Position.of(slotPos.getX() - pos.getX(), slotPos.getY() - pos.getY());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(),
-                () -> component.onPickup(player, current, cursor, offsetPos));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(), () -> {
+            component.onPickup(player, current, cursor, offsetPos);
+            player.updateInventory();
+        }, 1);
     }
 
     private void handlePlace(Player player, int slot, ItemStack current, ItemStack cursor, Component component) {
         Position pos = getComponents().get(component);
         Position slotPos = Position.toPosition(this, slot);
         Position offsetPos = Position.of(slotPos.getX() - pos.getX(), slotPos.getY() - pos.getY());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(),
-                () -> component.onPlace(player, current, cursor, offsetPos));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(getHolder(), () -> {
+            component.onPlace(player, current, cursor, offsetPos);
+            player.updateInventory();
+        }, 1);
     }
 
     private void handleClick(Player player, ClickType type, int slot, Component component) {
